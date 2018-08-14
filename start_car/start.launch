@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+ <group ns="shoppingcar">
+
+
+	<!--Run transform -->
+  	<!--node name="baselink_to_baselaser" pkg="tfpkg" type="baselink_to_baselaser" output="screen" /-->
+  	<!--node name="map_to_odom" pkg="tfpkg" type="map_to_odom" output="screen" /-->
+  	<!--node name="map_to_baselaser" pkg="tfpkg" type="map_to_baselaser" output="screen" /-->
+  	<!--node name="odom_to_baselink" pkg="tfpkg" type="odom_to_baselink" output="screen" /-->
+	<node pkg="tf" type="static_transform_publisher" name="baselink_to_baselaser" args="-0.105 -0.1925 0.15 0 0 0 /base_link /base_laser 100"/>	
+	<node pkg="tf" type="static_transform_publisher" name="odom_to_world" args="0 0 0 0 0 0 /odom /world 100"/>	
+
+
+
+	<node name="base_control_node" pkg="base_control" type="base_control_node" output="screen" />
+  	<node name="odometry_car" pkg="odometry-car" type="odometry-car_node" output="screen" />
+
+	<!--Run gmapping -->
+	<!--publish map->odom -->
+  	<include file="$(find gmapping)/launch/slam_gmapping_pr2.launch" />
+ 
+	<!--Run zed -->
+ 	<!--include file="$(find zed_wrapper)/launch/zed_camera.launch" /-->
+	
+	<!--Run rplidar -->
+  	<include file="$(find rplidar_ros)/launch/rplidar.launch" />
+
+	<!--Run the map server -->
+	<!--node name="map_server" pkg="map_server" type="map_server" args="$(find map_server)/map303.yaml"/>
+	<node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 /map /odom 100"/-->		
+
+	<!--Run AMCL -->
+	<!--include file="$(find amcl)/examples/amcl_diff.launch"/-->
+
+	<!--Run move_base -->
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<rosparam file="$(find start_car)/costmap_common_params.yaml" command="load" ns="global_costmap" />
+   		<rosparam file="$(find start_car)/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    		<rosparam file="$(find start_car)/local_costmap_params.yaml" command="load" />
+   		<rosparam file="$(find start_car)/global_costmap_params.yaml" command="load" />
+   		<rosparam file="$(find start_car)/base_local_planner_params.yaml" command="load" />
+   		<rosparam file="$(find start_car)/global_planner_params.yaml" command="load" />
+
+	</node>
+	
+
+	<!--Run laser_scan_matcher -->
+	<node name="LaserScanMatcher" pkg="laser_scan_matcher" type="laser_scan_matcher_node" output="screen" />
+
+	<node name="rviz" pkg="rviz" type="rviz" output="screen" />
+  </group>
+</launch>
+
+
