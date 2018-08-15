@@ -40,7 +40,6 @@
     		<rosparam file="$(find start_car)/local_costmap_params.yaml" command="load" />
    		<rosparam file="$(find start_car)/global_costmap_params.yaml" command="load" />
    		<rosparam file="$(find start_car)/base_local_planner_params.yaml" command="load" />
-   		<rosparam file="$(find start_car)/global_planner_params.yaml" command="load" />
 
 	</node>
 	
